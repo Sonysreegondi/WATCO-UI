@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "lib": ["DOM", "ESNext"],
+    "types": ["react"],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "target": "ESNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
