@@ -20,7 +20,7 @@ export default function Sidebar() {
     <div className="h-screen w-64 bg-white shadow-md flex flex-col">
       {/* Logo */}
       <div className="p-4">
-        <img src="/assets/images/Watco-logo.svg" alt="Watco Logo" className="h-12" />
+        <img src="/assets/icons/Watco-logo.svg" alt="Watco Logo" className="h-12" />
       </div>
 
       {/* Sidebar Menu */}
