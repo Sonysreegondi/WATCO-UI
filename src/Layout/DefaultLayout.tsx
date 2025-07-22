@@ -8,7 +8,7 @@ const DefaultLayout = () => {
     <div className="flex h-screen">
       <Sidebar />
       <div className="flex flex-col flex-1 overflow-auto">
-        <Header />
+        {/* <Header /> */}
         <main className="flex-1 p-4 bg-gray-50">
           <Outlet />
         </main>

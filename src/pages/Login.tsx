@@ -1,80 +1,97 @@
-// src/pages/Login.tsx
-import { useState } from "react";
+// src/pages/auth/Login.tsx
+import React from "react";
 import { useNavigate } from "react-router-dom";
-import RegisterModal from "../Models/registraionForm"; // Ensure file name matches exactly
 
-const Login = () => {
-  const [showRegister, setShowRegister] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+export default function Login() {
   const navigate = useNavigate();
 
-
-  const handleLogin = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!email || !password) {
-      setError("Please fill in both email and password.");
-      return;
-    }
-
-    // Simulate login
-    sessionStorage.setItem("user", JSON.stringify({ email }));
-    navigate("/watco/dashboard");
+    // You can add authentication logic here
+    navigate("/watco/admindashboard");
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 to-blue-300 px-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Login to Watco</h2>
+    <div className="relative min-h-screen grid grid-cols-1 md:grid-cols-2 bg-white">
+      {/* Logo Positioned Absolutely */}
+      <img
+        src="/assets/images/cattletrain.png"
+        alt="Cattle Train Logo"
+        className="w-[72px] h-[72px] absolute top-[48px] left-[48px]"
+      />
+      {/* Left Login Form */}
+      <div className="flex justify-center items-center p-4 md:p-8">
+        <div className="w-[350px] h-[317px] bg-white shadow-lg rounded-xl p-6">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Welcome to Watco
+          </h2>
+          <p className="text-gray-500 text-sm mb-4">
+            Please enter your details to access bookings
+          </p>
 
-        {error && (
-          <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm">{error}</div>
-        )}
+          <form className="space-y-4" onSubmit={handleSubmit}>
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">
+                Mobile or Email
+              </label>
+              <input
+                type="text"
+                placeholder="Albertflores@gmail.com"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              />
+            </div>
 
-        <form onSubmit={handleLogin} className="space-y-5">
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+            <div>
+              <label className="block text-sm text-gray-700 mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              />
+              <div className="flex justify-between text-sm mt-1">
+                <label className="text-gray-600">
+                  <input type="checkbox" className="mr-2" />
+                  Remember Me
+                </label>
+                <a
+                  href="#"
+                  className="text-yellow-600 font-medium hover:underline"
+                >
+                  Forgot Password?
+                </a>
+              </div>
+            </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+            <button
+              type="submit"
+              className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-md"
+            >
+              Log in securely
+            </button>
 
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 rounded-md transition"
-          >
-            Login
-          </button>
-        </form>
-
-        <p className="text-sm text-center mt-6 text-gray-500">
-          Don’t have an account?{" "}
-          <button
-            type="button"
-            className="text-yellow-700 underline font-medium"
-            onClick={() => setShowRegister(true)}
-          >
-            Register
-          </button>
-        </p>
+            <p className="text-center text-sm text-gray-600">
+              Don’t have an account?{" "}
+              <a
+                href="#"
+                className="text-yellow-600 font-medium hover:underline"
+              >
+                Sign up
+              </a>
+            </p>
+          </form>
+        </div>
       </div>
 
-      {showRegister && <RegisterModal onClose={() => setShowRegister(false)} />}
+      {/* Right-side Train Image */}
+      <div className="hidden md:block">
+        <img
+          src="/assets/images/train.jpg"
+          alt="Watco Train"
+          className="h-full w-full object-cover"
+        />
+      </div>
     </div>
   );
-};
-
-export default Login;
+}

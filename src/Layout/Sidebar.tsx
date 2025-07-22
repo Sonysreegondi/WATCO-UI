@@ -1,33 +1,67 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { ChevronDownIcon } from "@heroicons/react/24/solid";
 
-const Sidebar = () => {
-  const navItems = [
-    { name: "Dashboard", path: "/watco/dashboard" },
-    // { name: "Profile", path: "/watco/profile" },
-    // Add more items as needed
-  ];
+const privileges = ["DASHBOARD", "PARTNERS", "ROLES"]; // ← this should come from user data
+
+const sidebarItems = [
+  { label: "Dashboard", path: "/watco/admindashboard", key: "DASHBOARD" },
+  { label: "Roles", path: "/watco/roles", key: "ROLES" },
+];
+
+export default function Sidebar() {
+  const [openAccordion, setOpenAccordion] = useState<string | null>(null);
+
+  const toggleAccordion = (key: string) => {
+    setOpenAccordion(openAccordion === key ? null : key);
+  };
 
   return (
-    <aside className="w-64 h-full bg-blue-900 text-white flex flex-col p-4">
-      <div className="text-2xl font-bold mb-6">Watco</div>
-      <nav className="flex flex-col gap-2">
-        {navItems.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              `py-2 px-4 rounded hover:bg-blue-700 ${
-                isActive ? "bg-blue-700 font-semibold" : "text-white"
-              }`
-            }
-          >
-            {item.name}
-          </NavLink>
-        ))}
-      </nav>
-    </aside>
-  );
-};
+    <div className="h-screen w-64 bg-white shadow-md flex flex-col">
+      {/* Logo */}
+      <div className="p-4">
+        <img src="/assets/images/Watco-logo.svg" alt="Watco Logo" className="h-12" />
+      </div>
 
-export default Sidebar;
+      {/* Sidebar Menu */}
+      <nav className="flex-1 px-4 space-y-2 text-gray-700">
+        {sidebarItems
+          .filter(item => privileges.includes(item.key))
+          .map(item => (
+            <Link
+              key={item.key}
+              to={item.path}
+              className="block py-2 px-3 rounded hover:bg-gray-100"
+            >
+              {item.label}
+            </Link>
+          ))}
+
+        {/* Example Accordion Menu */}
+        <div>
+          <button
+            onClick={() => toggleAccordion("CONFIG")}
+            className="flex justify-between items-center w-full py-2 px-3 rounded hover:bg-gray-100"
+          >
+            <span>Configurations</span>
+            <ChevronDownIcon className={`h-5 w-5 transition-transform ${openAccordion === "CONFIG" ? "rotate-180" : ""}`} />
+          </button>
+
+          {openAccordion === "CONFIG" && (
+            <div className="ml-4 space-y-1">
+              <Link to="/fibrez/settings" className="block py-1 px-3 rounded hover:bg-gray-100">Settings</Link>
+              <Link to="/fibrez/preferences" className="block py-1 px-3 rounded hover:bg-gray-100">Preferences</Link>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      {/* Footer */}
+      <div className="p-4 border-t mt-auto">
+        <div className="text-sm font-semibold text-gray-800">Jagadeesh</div>
+        <div className="text-xs text-gray-500">Admin</div>
+        <button className="mt-2 text-sm text-red-500">Logout</button>
+      </div>
+    </div>
+  );
+}
