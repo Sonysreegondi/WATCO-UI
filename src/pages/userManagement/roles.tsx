@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import TopHeader from "../../components/common/Topheader";
 import Table from "../../components/common/Table";
-import { RolesData } from "../../Models/interfaceModal";
-import { observer } from "mobx-react-lite";
+import { RolesData } from "../../commonUtils/interfaceModal";
+import TopHeader from "../../components/common/TopHeader";
 
-const RolesPage = observer(() => {
+const RolesPage =(() => {
   const [filterValue, setFilterValue] = useState("");
 
   useEffect(() => {}, []);

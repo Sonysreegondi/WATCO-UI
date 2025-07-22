@@ -1,11 +1,12 @@
-// components/common/Table.tsx
 import React from "react";
+import { StatusColor } from "../../commonUtils/StatusColors";
+
 
 interface TableProps {
   updateWallet: () => void;
   headerColumns: string[];
   modelCallBack: () => void;
-  authStore: any[]; // Array of data objects to display
+  authStore: any[];
   parentCallback: () => void;
   value: string;
   dailogType?: string;
@@ -43,9 +44,20 @@ const Table: React.FC<TableProps> = ({
               <tr key={idx} className="hover:bg-gray-50">
                 {headerColumns.map((col, i) => {
                   const key = Object.keys(item)[i];
+                  const value = item[key];
+                  const isStatusColumn = key.toLowerCase().includes("status");
+
                   return (
                     <td key={i} className="px-4 py-2 text-sm text-gray-700">
-                      {item[key]}
+                      {isStatusColumn ? (
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${StatusColor(value)}`}
+                        >
+                          {value}
+                        </span>
+                      ) : (
+                        value
+                      )}
                     </td>
                   );
                 })}
