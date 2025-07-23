@@ -58,7 +58,7 @@ const TopHeader = ({ title, btn, navigateRoute }: Props) => {
   }, []);
 
   return (
-    <div className="grid md:grid-cols-2 items-center py-4 px-4 border-b border-gray-200 relative">
+   <div className="grid md:grid-cols-2 items-center py-2 px-4 border-b border-gray-200 relative">
       <h2 className="text-2xl font-semibold text-gray-800">{title}</h2>
 
       <div className="flex justify-end items-center space-x-4">
