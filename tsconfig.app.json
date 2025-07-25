@@ -4,9 +4,10 @@
     "lib": ["DOM", "ESNext"],
     "types": ["react"],
     "module": "ESNext",
-    "moduleResolution": "Node",
+   "moduleResolution": "Bundler",
     "target": "ESNext",
     "strict": true,
+    "noEmit": true,
     "esModuleInterop": true,
     "skipLibCheck": true
   },

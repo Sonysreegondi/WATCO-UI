@@ -11,6 +11,8 @@ import Loader from "./components/common/Loader";
 import ProtectedRoute from "./components/auth/PretectedRoute";
 import { routes } from "./routes";
 import Login from "./pages/Login";
+import ChangePassword from "./pages/ChangePassword";
+import UserRegistration from "./pages/UserRegistration";
 
 
 function App() {
@@ -20,6 +22,9 @@ function App() {
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ChangePassword />} />
+                <Route path="/user-reg" element={<UserRegistration />} />
+
         <Route path="/watco" element={<DefaultLayout />}>
           {routes.map((route, index) => (
             <Route
