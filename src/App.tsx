@@ -13,7 +13,7 @@ import { routes } from "./routes";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import ChangePassword from "./pages/ChangePassword";
-import UserRegistration from "./pages/UserRegistration";
+import Signup2 from "./pages/Signup2";
 
 
 function App() {
@@ -24,8 +24,8 @@ function App() {
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/forgot-password" element={<ChangePassword />} />
-        <Route path="/user-reg" element={<UserRegistration />} />
+        <Route path="/change-password" element={<ChangePassword />} />
+        <Route path="/signup2" element={<Signup2 />} />
         <Route path="/watco" element={<DefaultLayout />}>
           {routes.map((route, index) => (
             <Route
