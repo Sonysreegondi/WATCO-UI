@@ -12,79 +12,68 @@ export default function Login() {
     navigate("/watco/AdminDashboard");
   };
 
+  const handleSignup = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // You can add real validation/auth here
+    navigate("/watco/AdminDashboard");
+  };
+
 
   return (
-    <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2">
-      {/* Left Side - Form */}
-      <div className="relative flex flex-col justify-center items-center bg-white h-screen">
-        {/* Logo */}
+    <div className="min-h-screen w-full bg-cover bg-[right_center] bg-no-repeat flex items-center justify-end"
+         style={{ backgroundImage: "url('/assets/images/train.jpg')" }}>
+      
+      {/* Floating Login Card */}
+      <div className="bg-white w-full max-w-md p-8 shadow-2xl rounded-lg m-8">
+        <div className="text-center mb-6">
         <img
           src="/assets/images/cattletrain.png"
           alt="Cattle Train Logo"
-          className="absolute"
-          style={{ width: "100px", height: "100px", top: "48px", left: "48px" }}
+          className="mx-auto mb-4 w-28 sm:w-32"
+          style={{  maxWidth: '25%', height: 'auto', top: "20px", }}
         />
 
-        {/* Form Container */}
-        <div className="w-[350px] space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">
-            Welcome
-          </h2>
-          <p className="text-sm text-center text-gray-600">
-            Please enter your details to access bookings
-          </p>
-
-          <form className="space-y-4" onSubmit={handleLogin}>
-            {/* Mobile or Email */}
-            <div className="flex items-center border border-gray-300 rounded-md px-3 py-2 space-x-2">
-              <img
-                src="/assets/icons/profile-circle.svg"
-                alt="email"
-                className="w-5 h-5"
-              />
-              <input
-                type="text"
-                placeholder="Mobile or Email"
-                className="flex-1 focus:outline-none text-sm"
-              />
-            </div>
-            {/* Password */}
-            <div className="flex items-center border border-gray-300 rounded-md px-3 py-2 space-x-2">
-              <img
-                src="/assets/icons/lock-circle.svg"
-                alt="password"
-                className="w-5 h-5"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="flex-1 focus:outline-none text-sm"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded-md font-medium"
-            >
-              Log in securely
-            </button>
-          </form>
-
-          <p className="text-center text-xs text-gray-600">
-            Don’t have an account?{" "}
-            <a href="#" className="text-blue-600 hover:underline">
-              Sign up
-            </a>
-          </p>
+          <p className="text-gray-700 mt-4"
+            style={{fontFamily:"Lexend Deca"}}
+          >Welcome!<br />Please enter your details to Login</p>
         </div>
-      </div>
 
-      {/* Right Side - Image */}
-      <div className="hidden lg:block h-screen overflow-hidden">
-        <img
-          src="/assets/images/train.jpg"
-          alt="Train"
-          className="w-full h-full object-cover"
-        />
+        <form className="space-y-4">
+          <div>
+            <label className="block text-sm mb-1">Email</label>
+            <input
+              type="email"
+              placeholder="Albertflores@gmail.com"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm mb-1">Password</label>
+            <input
+              type="password"
+              placeholder="**************"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            />
+          </div>
+
+          <div className="flex items-center justify-between text-sm">
+            <label className="flex items-center">
+              <input type="checkbox" className="mr-2" />
+              Remember Me
+            </label>
+            <a href="#" className="text-blue-500 hover:underline">Forgot Your Password?</a>
+          </div>
+
+          <button type="submit" className="w-full bg-yellow-500 text-white py-2 rounded-md hover:bg-yellow-600 transition">
+            Login
+          </button>
+        </form>
+
+        <div className="text-center mt-4 text-sm">
+          Don't have an account? <a href="#" className="text-blue-500 hover:underline">Sign up</a>
+        </div>
       </div>
     </div>
   );
