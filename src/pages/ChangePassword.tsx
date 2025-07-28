@@ -32,22 +32,41 @@ export default function ChangePassword() {
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
             <label className="block text-sm mb-1">New Password</label>
-            <input
-              type="password"
-              placeholder="Enter new password"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              required
-            />
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <img
+                  src="/assets/icons/lock-circle.svg"
+                  alt="Lock Icon"
+                  className="w-5 h-5"
+                />
+              </span>
+              <input
+                type="password"
+                placeholder="Enter new password"
+  className="w-full pl-10 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                required
+              />
+           
+            </div>
           </div>
 
           <div>
             <label className="block text-sm mb-1">Confirm Password</label>
-            <input
-              type="password"
-              placeholder="Confirm password"
-              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-              required
-            />
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 pl-3 flex items-center">
+                <img
+                  src="/assets/icons/lock-circle.svg"
+                  alt="Lock Icon"
+                  className="w-5 h-5"
+                />
+              </span>
+              <input
+                type="password"
+                placeholder="Confirm password"
+                className="w-full pl-10 px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                required
+              />
+            </div>
           </div>
 
           <button
