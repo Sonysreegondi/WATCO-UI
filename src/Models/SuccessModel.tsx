@@ -5,12 +5,16 @@ interface SuccessScreenProps {
   title: string;
   message: string;
   buttonText?: string;
+  titleClassName?: string;
+  messageClassName?: string;
 }
 
 export default function SuccessScreen({
   title,
   message,
   buttonText = "Back to Login",
+  titleClassName = "",
+  messageClassName = "",
 }: SuccessScreenProps) {
   const navigate = useNavigate();
 
@@ -37,12 +41,12 @@ export default function SuccessScreen({
         />
 
         {/* Title */}
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-gray-800 mb-2">
+        <h2 className={`text-sm sm:text-base md:text-lg font-semibold text-gray-800 mb-2 ${titleClassName}`}>
           {title}
         </h2>
 
         {/* Message */}
-        <p className="text-sm sm:text-base text-gray-600 mb-6 px-4">
+        <p className={`text-xs sm:text-sm text-gray-600 mb-6 px-4 ${messageClassName}`}>
           {message}
         </p>
 

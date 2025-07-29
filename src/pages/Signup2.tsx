@@ -57,12 +57,14 @@ export default function Login() {
   };
 
   return (
-    <div
-      className="min-h-screen w-full bg-cover bg-[right_center] bg-no-repeat flex items-center justify-center lg:justify-end px-4 sm:px-8 py-8"
-      style={{ backgroundImage: "url('/assets/images/train.jpg')" }}
-    >
+   <div
+  className="min-h-screen w-full bg-cover bg-no-repeat bg-right flex items-center justify-end px-4 sm:px-8 py-8"
+  style={{ backgroundImage: "url('/assets/images/train.jpg')" }}
+>
+
       {!showSuccess ? (
-        <div className="bg-white w-full max-w-md p-6 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh] flex flex-col self-center lg:self-end lg:ml-80">
+     <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh] flex flex-col mr-12">
+
           {/* Header */}
           <div className="flex justify-between items-start mb-3">
             <div>
@@ -86,9 +88,7 @@ export default function Login() {
             {/* Step 1 */}
             {step === 1 && (
               <div className="space-y-2">
-                <h3 className="text-sm font-normal text-gray-800 mb-1 mt-2">
-                  Primary Contact Details
-                </h3>
+       
                 {[
                   { label: "First Name", placeholder: "Enter First Name" },
                   { label: "Last Name", placeholder: "Enter Last Name" },
@@ -316,6 +316,8 @@ export default function Login() {
               title="Account Created Successfully"
               message="Your account setup is complete. You can now log in and start booking!"
               buttonText="Back to Login"
+               titleClassName="text-sm"
+              messageClassName="text-xs"
             />
           </div>
         )

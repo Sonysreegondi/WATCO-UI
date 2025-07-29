@@ -1,91 +1,178 @@
-// src/pages/Signup.tsx
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import InputField from "../components/common/InputField";
+import SuccessScreen from "../Models/SuccessModel";
+import { isValidTenDigitMobile } from "../commonUtils/Validators";
 
 export default function Signup() {
-  const navigate = useNavigate();
+  const [acknowledged, setAcknowledged] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [submitClicked, setSubmitClicked] = useState(false);
+  const [formData, setFormData] = useState<{ [key: string]: string }>({});
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleBack = () => {
+    window.history.back();
+  };
+  const handleSubmit = () => {
+    const requiredFields = [
+      "firstName",
+      "lastName",
+      "companyName",
+      "abn",
+      "mobileNumber",
+      "email", // still required, but no format check
+    ];
 
-    // You can add real validation/auth here
-    navigate("/watco/AdminDashboard");
+    const newErrors: { [key: string]: string } = {};
+
+    requiredFields.forEach((field) => {
+      if (!formData[field]?.trim()) {
+        newErrors[field] = field + " required.";
+      }
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
+    setSubmitClicked(true);
+    setShowSuccess(true);
   };
 
-
   return (
-    <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2">
-      {/* Left Side - Form */}
-      <div className="relative flex flex-col justify-center items-center bg-white h-screen">
-        {/* Logo */}
-        <img
-          src="/assets/images/cattletrain.png"
-          alt="Cattle Train Logo"
-          className="absolute"
-          style={{ maxWidth: '20%', height: 'auto', top: "20px", left: "20px",backgroundColor:'#fff' }}
-        />
-
-        {/* Form Container */}
-        <div className="w-[350px] space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">
-            Welcome
-          </h2>
-          <p className="text-sm text-center text-gray-600">
-            Please enter your details to access bookings
-          </p>
-
-          <form className="space-y-4" onSubmit={handleLogin}>
-            {/* Mobile or Email */}
-            <div className="flex items-center border border-gray-300 rounded-md px-3 py-2 space-x-2">
-              <img
-                src="/assets/icons/profile-circle.svg"
-                alt="email"
-                className="w-5 h-5"
-              />
-              <input
-                type="text"
-                placeholder="Mobile or Email"
-                className="flex-1 focus:outline-none text-sm"
-              />
+    <div
+      className="min-h-screen w-full bg-cover bg-no-repeat bg-right flex items-center justify-end px-4 sm:px-8 py-8"
+      style={{ backgroundImage: "url('/assets/images/train.jpg')" }}
+    >
+      {!showSuccess ? (
+        <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh] flex flex-col mr-12">
+          {/* Header */}
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <h2 className="text-base font-medium text-gray-800">
+                Complete Your Account
+              </h2>
+              <p className="text-xs text-gray-500 mt-1">
+                Fill in your details to get started.
+              </p>
             </div>
-            {/* Password */}
-            <div className="flex items-center border border-gray-300 rounded-md px-3 py-2 space-x-2">
-              <img
-                src="/assets/icons/lock-circle.svg"
-                alt="password"
-                className="w-5 h-5"
-              />
-              <input
-                type="password"
-                placeholder="Password"
-                className="flex-1 focus:outline-none text-sm"
-              />
-            </div>
-            <button
-              type="submit"
-              className="w-full bg-yellow-500 hover:bg-yellow-600 text-white py-2 rounded-md font-medium"
-            >
-              Log in securely
-            </button>
-          </form>
+            <img
+              src="/assets/images/cattletrain.png"
+              alt="Cattle Train Logo"
+              className="w-[50px] h-auto"
+            />
+          </div>
 
-          <p className="text-center text-xs text-gray-600">
-            Don’t have an account?{" "}
-            <a href="#" className="text-blue-600 hover:underline">
-              Sign up
-            </a>
-          </p>
+          {/* All Form Fields Together */}
+          <div className="space-y-2 flex-1">
+            {[
+              {
+                name: "firstName",
+                label: "First Name",
+                placeholder: "Enter First Name",
+              },
+              {
+                name: "lastName",
+                label: "Last Name",
+                placeholder: "Enter Last Name",
+              },
+              {
+                name: "companyName",
+                label: "Company Name",
+                placeholder: "Enter Company Name",
+              },
+              {
+                name: "abn",
+                label: "Australian Business Number (ABN)",
+                placeholder: "Enter Australian Business Number (ABN)",
+              },
+              {
+                name: "mobileNumber",
+                label: "Mobile Number",
+                placeholder: "Enter Mobile Number",
+              },
+              {
+                name: "email",
+                label: "Email ID",
+                placeholder: "Enter Email ID",
+              },
+            ].map((field, i) => (
+              <InputField
+                key={i}
+                label={field.label}
+                placeholder={field.placeholder}
+                value={formData[field.name] || ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+
+                  setFormData((prev) => ({
+                    ...prev,
+                    [field.name]: value,
+                  }));
+
+                  setErrors((prevErrors) => {
+                    const updatedErrors = { ...prevErrors };
+
+                    // Live validation for mobileNumber
+                    if (field.name === "mobileNumber") {
+                      if (!value.trim()) {
+                        updatedErrors[field.name] = "Mobile Number required.";
+                      } else if (!isValidTenDigitMobile(value)) {
+                        updatedErrors[field.name] =
+                          "Enter a valid 10-digit mobile number starting with 0.";
+                      } else {
+                        delete updatedErrors[field.name];
+                      }
+                    } else {
+                      // Remove error if field has value
+                      if (value.trim()) {
+                        delete updatedErrors[field.name];
+                      }
+                    }
+
+                    return updatedErrors;
+                  });
+                }}
+                error={errors[field.name]}
+              />
+            ))}
+
+            {/* Buttons */}
+            <div className="flex flex-col gap-3 pt-4 md:flex-row md:gap-3 mt-2 mb-0">
+              <button
+                type="button"
+                onClick={handleBack}
+                className="border border-yellow-500 text-yellow-500 px-4 py-1.5 rounded text-sm"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className="bg-yellow-500 text-white px-4 py-1.5 rounded text-sm"
+              >
+                Submit Application
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-
-      {/* Right Side - Image */}
-      <div className="hidden lg:block h-screen overflow-hidden">
-        <img
-          src="/assets/images/train.jpg"
-          alt="Train"
-          className="w-full h-full object-cover"
-        />
-      </div>
+      ) : (
+        submitClicked &&
+        showSuccess && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-white px-4">
+            <SuccessScreen
+              title="Your application has been submitted successfully!"
+              message="Your account setup is complete. You can now log in and start booking!"
+              buttonText="Back to Login"
+              titleClassName="text-sm"
+              messageClassName="text-xs"
+            />
+          </div>
+        )
+      )}
     </div>
   );
 }

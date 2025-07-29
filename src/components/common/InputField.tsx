@@ -1,4 +1,3 @@
-// src/components/common/InputField.tsx
 import React from "react";
 import ErrorMessage from "./ErrorMessage";
 
@@ -21,8 +20,7 @@ export default function InputField({
 }: InputFieldProps) {
   return (
     <div>
-     <label className="text-xs font-normal text-gray-700 block mb-0.5">
-
+      <label className="text-xs font-normal text-gray-500 block mb-1 font-roboto">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <input
@@ -30,7 +28,7 @@ export default function InputField({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full border border-gray-300 rounded px-2 py-[6px] text-xs ${
+        className={`w-full border rounded px-2 py-[6px] text-xs font-roboto placeholder-gray-300 ${
           error ? "border-red-500" : "border-gray-300"
         }`}
       />
