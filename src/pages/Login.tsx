@@ -1,6 +1,13 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { isBlacklistedEmail } from "../commonUtils/Validators";
 
 export default function Login() {
+  const navigate = useNavigate();
+
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+
   return (
     <div
       className="min-h-screen w-full bg-cover bg-no-repeat bg-right flex items-center justify-end px-4 sm:px-8 py-8"
@@ -15,14 +22,12 @@ export default function Login() {
             className="mx-auto w-24 sm:w-28 mb-3"
             style={{ height: "auto" }}
           />
-
           <h2
             className="text-[22px] font-normal text-gray-900 leading-tight text-center"
             style={{ fontFamily: "Roboto, sans-serif" }}
           >
             Welcome!
           </h2>
-
           <p
             className="text-sm text-gray-600 mt-1"
             style={{ fontFamily: "Lexend Deca" }}
@@ -31,7 +36,28 @@ export default function Login() {
           </p>
         </div>
 
-        <form className="space-y-4">
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const trimmed = email.trim();
+
+            if (!trimmed) {
+              setEmailError("Email is required.");
+              return;
+            }
+
+            if (isBlacklistedEmail(trimmed)) {
+              setEmailError(
+                "This is a restricted email address. Please use your personal or work email instead."
+              );
+              return;
+            }
+
+            setEmailError("");
+            navigate("/watco/admindashboard");
+          }}
+        >
           {/* Email Input */}
           <div>
             <label className="block text-sm mb-1">Email</label>
@@ -45,10 +71,33 @@ export default function Login() {
               </span>
               <input
                 type="email"
+                value={email}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setEmail(val);
+
+                  const trimmed = val.trim();
+                  if (!trimmed) {
+                    setEmailError("Email is required.");
+                  } else if (isBlacklistedEmail(trimmed)) {
+                    setEmailError(
+                      "This is a restricted email address. Please use your personal or work email instead."
+                    );
+                  } else {
+                    setEmailError("");
+                  }
+                }}
                 placeholder="Albertflores@gmail.com"
-                className="w-full border border-gray-300 rounded px-3 py-2 text-sm pl-10 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                className={`w-full border ${
+                  emailError ? "border-red-500" : "border-gray-300"
+                } rounded px-3 py-2 text-sm pl-10 focus:outline-none focus:ring-2 ${
+                  emailError ? "focus:ring-red-500" : "focus:ring-yellow-500"
+                }`}
               />
             </div>
+            {emailError && (
+              <p className="text-xs text-red-600 mt-1 ml-1">{emailError}</p>
+            )}
           </div>
 
           {/* Password Input */}

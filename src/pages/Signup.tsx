@@ -1,36 +1,87 @@
-import { Link } from "react-router-dom";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import InputField from "../components/common/InputField";
 import SuccessScreen from "../Models/SuccessModel";
-import { isValidTenDigitMobile } from "../commonUtils/Validators";
+import {
+  isBlacklistedEmail,
+  isValidTenDigitMobile,
+} from "../commonUtils/Validators";
+
+type FieldConfig = {
+  name: string;
+  label: string;
+  placeholder: string;
+  maxLength?: number;
+  inputMode?: "numeric" | "text" | "tel" | "email";
+};
+
+const fields: FieldConfig[] = [
+  {
+    name: "firstName",
+    label: "First Name",
+    placeholder: "Enter First Name",
+  },
+  {
+    name: "lastName",
+    label: "Last Name",
+    placeholder: "Enter Last Name",
+  },
+  {
+    name: "companyName",
+    label: "Company Name",
+    placeholder: "Enter Company Name",
+  },
+  {
+    name: "ABN",
+    label: "Australian Business Number (ABN)",
+    placeholder: "Enter Australian Business Number (ABN)",
+    maxLength: 11,
+    inputMode: "numeric",
+  },
+  {
+    name: "mobileNumber",
+    label: "Mobile Number",
+    placeholder: "Enter Mobile Number",
+    maxLength: 10,
+    inputMode: "tel",
+  },
+  {
+    name: "email",
+    label: "Email ID",
+    placeholder: "Enter Email ID",
+    inputMode: "email",
+  },
+];
 
 export default function Signup() {
-  const [acknowledged, setAcknowledged] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [submitClicked, setSubmitClicked] = useState(false);
   const [formData, setFormData] = useState<{ [key: string]: string }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const handleBack = () => {
-    window.history.back();
-  };
-  const handleSubmit = () => {
-    const requiredFields = [
-      "firstName",
-      "lastName",
-      "companyName",
-      "abn",
-      "mobileNumber",
-      "email", // still required, but no format check
-    ];
+  const handleBack = () => window.history.back();
 
+  const handleSubmit = () => {
+    const requiredFields = fields.map((f) => f.name);
     const newErrors: { [key: string]: string } = {};
 
-    requiredFields.forEach((field) => {
-      if (!formData[field]?.trim()) {
-        newErrors[field] = field + " required.";
+    for (const field of requiredFields) {
+      const value = formData[field]?.trim() || "";
+
+      if (!value) {
+        newErrors[field] = `${field} required.`;
+        continue;
       }
-    });
+
+      if (field === "mobileNumber" && !isValidTenDigitMobile(value)) {
+        newErrors[field] =
+          "Enter a valid 10-digit mobile number starting with 0.";
+      }
+
+      if (field === "ABN" && value.length !== 11) {
+        newErrors[field] = "ABN must be exactly 11 digits.";
+      }
+    }
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -48,20 +99,14 @@ export default function Signup() {
       style={{ backgroundImage: "url('/assets/images/train.jpg')" }}
     >
       {!showSuccess ? (
-        <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh] flex flex-col mr-12">
+        <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh] flex flex-col mr-12 relative">
           {/* Header */}
           <div className="flex justify-between items-start mb-2">
             <div>
-              <h2
-                className="text-[20px] font-normal text-gray-900 text-left leading-tight"
-                style={{ fontFamily: "Roboto, sans-serif" }}
-              >
+              <h2 className="text-[20px] font-normal text-gray-900 text-left leading-tight">
                 Create Your Account
               </h2>
-              <p
-                className="text-[12px] text-gray-400 mb-2"
-                style={{ fontFamily: "Roboto, sans-serif" }}
-              >
+              <p className="text-[12px] text-gray-400 mb-2">
                 Fill in your details to get started.
               </p>
             </div>
@@ -72,69 +117,62 @@ export default function Signup() {
             />
           </div>
 
-          {/* All Form Fields Together */}
+          {/* Form */}
           <div className="space-y-2 flex-1">
-            {[
-              {
-                name: "firstName",
-                label: "First Name",
-                placeholder: "Enter First Name",
-              },
-              {
-                name: "lastName",
-                label: "Last Name",
-                placeholder: "Enter Last Name",
-              },
-              {
-                name: "companyName",
-                label: "Company Name",
-                placeholder: "Enter Company Name",
-              },
-              {
-                name: "ABN",
-                label: "Australian Business Number (ABN)",
-                placeholder: "Enter Australian Business Number (ABN)",
-              },
-              {
-                name: "mobileNumber",
-                label: "Mobile Number",
-                placeholder: "Enter Mobile Number",
-              },
-              {
-                name: "email",
-                label: "Email ID",
-                placeholder: "Enter Email ID",
-              },
-            ].map((field, i) => (
+            {fields.map((field, i) => (
               <InputField
                 key={i}
+                name={field.name}
                 label={field.label}
                 placeholder={field.placeholder}
+                maxLength={field.maxLength}
+                inputMode={field.inputMode}
                 value={formData[field.name] || ""}
-                onChange={(e) => {
-                  const value = e.target.value;
+                onChange={(val: string) => {
+                  const trimmed = val.trim();
 
                   setFormData((prev) => ({
                     ...prev,
-                    [field.name]: value,
+                    [field.name]: trimmed,
                   }));
 
                   setErrors((prevErrors) => {
                     const updatedErrors = { ...prevErrors };
 
-                    // Live validation for mobileNumber
                     if (field.name === "mobileNumber") {
-                      if (!value.trim()) {
+                      if (!trimmed) {
                         updatedErrors[field.name] = "Mobile Number required.";
-                      } else if (!isValidTenDigitMobile(value)) {
+                      } else if (!isValidTenDigitMobile(trimmed)) {
                         updatedErrors[field.name] =
                           "Enter a valid 10-digit mobile number starting with 0.";
                       } else {
                         delete updatedErrors[field.name];
                       }
+                    } else if (field.name === "ABN") {
+                      if (!trimmed) {
+                        updatedErrors[field.name] = "ABN required.";
+                      } else if (trimmed.length !== 11) {
+                        updatedErrors[field.name] =
+                          "ABN must be exactly 11 digits.";
+                      } else {
+                        delete updatedErrors[field.name];
+                      }
+                    } else if (field.name === "email") {
+                      if (!trimmed) {
+                        updatedErrors[field.name] = "Email is required.";
+                      } else if (isBlacklistedEmail(trimmed)) {
+                        updatedErrors[field.name] =
+                          "This is a restricted email address. Please use your personal or work email instead.";
+                      } else {
+                        delete updatedErrors[field.name];
+                      }
                     } else {
-                      // Remove error if field has value
-                      if (value.trim()) {
+                      // Generic required validation for any other field
+                      if (!trimmed) {
+                        updatedErrors[
+                          field.name
+                        ] = `${field.label} is required.`;
+                      } else {
                         delete updatedErrors[field.name];
                       }
                     }
@@ -164,6 +202,12 @@ export default function Signup() {
               </button>
             </div>
           </div>
+
+          {/* Footer note */}
+          <span className="absolute right-4 -bottom-0 text-[14px]">
+            <span className="text-red-500 font-bold text-[16px]">*</span>{" "}
+            <span className="text-black font-normal">Must be filled</span>
+          </span>
         </div>
       ) : (
         submitClicked &&
@@ -171,11 +215,11 @@ export default function Signup() {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-white px-4">
             <SuccessScreen
               title="Application Submitted Successfully!"
-              message="Your request has been received and is currently under review by our administrative team, once approved, you will receive a separate email to complete your profile."
+              message="Your request has been received and is currently under review by our administrative team. Once approved, you will receive a separate email to complete your profile."
               buttonText="Back to Login"
               titleClassName="text-sm"
               messageClassName="text-xs"
-              imageType="variant1" // <-- Add this line
+              imageType="variant1"
             />
           </div>
         )

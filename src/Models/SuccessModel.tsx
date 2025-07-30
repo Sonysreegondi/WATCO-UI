@@ -55,7 +55,8 @@ export default function SuccessScreen({
 
         {/* Message */}
         <p
-          className={`text-xs sm:text-sm text-gray-600 mb-6 px-4 ${messageClassName}`}
+          className={`text-sm text-gray-600 mb-6 px-4 whitespace-nowrap overflow-hidden text-ellipsis ${messageClassName}`}
+          style={{ fontFamily: "Roboto, sans-serif" }}
         >
           {message}
         </p>

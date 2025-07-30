@@ -3,6 +3,11 @@ import { useState } from "react";
 import Stepper from "../components/common/Stepper";
 import InputField from "../components/common/InputField";
 import SuccessScreen from "../Models/SuccessModel";
+import TermsAndConditions from "../Models/Terms&Conditions"; // Add this import
+import {
+  isBlacklistedEmail,
+  isValidTenDigitMobile,
+} from "../commonUtils/Validators";
 
 export default function Login() {
   const [step, setStep] = useState(1);
@@ -17,6 +22,7 @@ export default function Login() {
   const [errorTabs, setErrorTabs] = useState<number[]>([]);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [contactLimitError, setContactLimitError] = useState("");
 
   const handleNext = () => {
     const newErrors: { [key: string]: string } = {};
@@ -99,10 +105,7 @@ export default function Login() {
           {/* Header */}
           <div className="flex justify-between items-start mb-3">
             <div>
-              <h2
-                className="text-[16px] font-normal text-gray-900 text-left leading-tight"
-                style={{ fontFamily: "Roboto, sans-serif" }}
-              >
+              <h2 className="text-[16px] font-normal text-gray-900 text-left leading-tight">
                 Complete Your Account
               </h2>
               <p className="text-[11px] text-gray-500 mt-1 mb-2">
@@ -159,8 +162,7 @@ export default function Login() {
                     label={field.label}
                     placeholder={field.placeholder}
                     value={formData[field.label] || ""}
-                    onChange={(e) => {
-                      const value = e.target.value;
+                    onChange={(value) => {
                       setFormData((prev) => ({
                         ...prev,
                         [field.label]: value,
@@ -210,9 +212,9 @@ export default function Login() {
                     label={field.label}
                     placeholder={field.placeholder}
                     value={formData[field.name] || ""}
-                    onChange={(e) => {
-                      const value = e.target.value;
+                    onChange={(value) => {
                       setFormData((prev) => ({ ...prev, [field.name]: value }));
+
                       if (errors[field.name]) {
                         setErrors((prev) => {
                           const updated = { ...prev };
@@ -231,22 +233,42 @@ export default function Login() {
             {step === 3 && (
               <div className="space-y-4 mt-2 p-2">
                 {/* Header and Add Button */}
-                <div className="flex justify-between items-center">
-                  <h3 className="text-sm font-semibold text-gray-800">
+                <div className="flex justify-between items-center mb-[0px]">
+                  <h3 className="text-sm font-semibold text-gray-800 m-0 p-0">
                     Accounts Payable Contact
                   </h3>
                   <button
                     type="button"
-                    className="text-blue-600 text-xs font-medium"
+                    className={`text-xs font-medium ${
+                      contacts.length >= 5
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-blue-600"
+                    }`}
                     onClick={() => {
-                      setContacts((prev) => [...prev, { id: contactCounter }]);
-                      setActiveContactId(contactCounter);
-                      setContactCounter((prev) => prev + 1);
+                      if (contacts.length < 5) {
+                        setContacts((prev) => [
+                          ...prev,
+                          { id: contactCounter },
+                        ]);
+                        setActiveContactId(contactCounter);
+                        setContactCounter((prev) => prev + 1);
+                        setContactLimitError("");
+                      } else {
+                        setContactLimitError(
+                          "You can only add up to 5 contacts."
+                        );
+                      }
                     }}
                   >
                     Add+
                   </button>
                 </div>
+
+                {contactLimitError && (
+                  <div className="text-xs text-red-500 m-0 p-0 leading-none">
+                    {contactLimitError}
+                  </div>
+                )}
 
                 {/* Tab Navigation */}
                 <div className="flex flex-wrap gap-2 mt-2 text-xs font-medium">
@@ -276,9 +298,13 @@ export default function Login() {
                                 (c) => c.id !== contact.id
                               );
                               setContacts(updated);
+
+                              // Set a new active tab if needed
                               if (isActive && updated.length > 0) {
                                 setActiveContactId(updated[0].id);
                               }
+
+                              setContactLimitError(""); // ✅ Clear the limit error when a tab is removed
                             }}
                           >
                             ✕
@@ -305,24 +331,76 @@ export default function Login() {
                     },
                   ].map((field) => {
                     const fieldKey = `accountContact_${activeContactId}_${field.key}`;
+
                     return (
                       <InputField
                         key={fieldKey}
                         label={field.label}
                         placeholder={field.placeholder}
+                        name={
+                          field.key === "phone" ? "mobileNumber" : field.key
+                        } // enable sanitization
+                        inputMode={field.key === "phone" ? "numeric" : "text"}
                         value={formData[fieldKey] || ""}
-                        onChange={(e) => {
-                          const value = e.target.value;
+                        onChange={(value) => {
+                          const trimmed = value.trim();
+
                           setFormData((prev) => ({
                             ...prev,
-                            [fieldKey]: value,
+                            [fieldKey]: trimmed,
                           }));
-                          if (errors[fieldKey]) {
-                            setErrors((prev) => {
-                              const updated = { ...prev };
-                              delete updated[fieldKey];
-                              return updated;
-                            });
+
+                          if (field.key === "phone") {
+                            if (!trimmed) {
+                              setErrors((prev) => ({
+                                ...prev,
+                                [fieldKey]: "Phone Number is required.",
+                              }));
+                            } else if (!isValidTenDigitMobile(trimmed)) {
+                              setErrors((prev) => ({
+                                ...prev,
+                                [fieldKey]:
+                                  "Enter a valid 10-digit mobile number starting with 0.",
+                              }));
+                            } else {
+                              setErrors((prev) => {
+                                const updated = { ...prev };
+                                delete updated[fieldKey];
+                                return updated;
+                              });
+                            }
+                          } else if (field.key === "email") {
+                            if (!trimmed) {
+                              setErrors((prev) => ({
+                                ...prev,
+                                [fieldKey]: "Email is required.",
+                              }));
+                            } else if (isBlacklistedEmail(trimmed)) {
+                              setErrors((prev) => ({
+                                ...prev,
+                                [fieldKey]:
+                                  "This is a restricted email address. Please use your personal or work email instead.",
+                              }));
+                            } else {
+                              setErrors((prev) => {
+                                const updated = { ...prev };
+                                delete updated[fieldKey];
+                                return updated;
+                              });
+                            }
+                          } else {
+                            if (!trimmed) {
+                              setErrors((prev) => ({
+                                ...prev,
+                                [fieldKey]: `${field.label} is required.`,
+                              }));
+                            } else {
+                              setErrors((prev) => {
+                                const updated = { ...prev };
+                                delete updated[fieldKey];
+                                return updated;
+                              });
+                            }
                           }
                         }}
                         error={errors[fieldKey]}
@@ -367,8 +445,7 @@ export default function Login() {
                     placeholder={field.placeholder}
                     value={formData[field.label] || ""}
                     required={false}
-                    onChange={(e) => {
-                      const value = e.target.value;
+                    onChange={(value) => {
                       setFormData((prev) => ({
                         ...prev,
                         [field.label]: value,
@@ -402,7 +479,8 @@ export default function Login() {
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex flex-col gap-3 pt-3 md:flex-row md:gap-3 mt-2 mb-0">
+          <div className="flex flex-col gap-3 pt-3 md:flex-row md:gap-3 mt-2 mb-0 relative">
+            {/* Buttons */}
             {step > 1 && (
               <button
                 type="button"
@@ -425,10 +503,21 @@ export default function Login() {
                 type="button"
                 onClick={handleSubmit}
                 className="bg-yellow-500 text-white px-4 py-1.5 rounded text-sm"
+                disabled={!acknowledged}
+                style={{
+                  opacity: !acknowledged ? 0.6 : 1,
+                  cursor: !acknowledged ? "not-allowed" : "pointer",
+                }}
               >
                 Submit
               </button>
             )}
+
+            {/* Must be filled note */}
+            <span className="absolute right-0 -bottom-5 text-[14px]">
+              <span className="text-red-500 font-bold text-[16px]">*</span>{" "}
+              <span className="text-black font-normal">Must be filled</span>
+            </span>
           </div>
         </div>
       ) : (
@@ -436,14 +525,21 @@ export default function Login() {
         showSuccess && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-white px-4">
             <SuccessScreen
-              title="Account Created Successfully"
-              message="Your account setup is complete. You can now log in and start booking!"
+              title="Profile completed successfully!"
+              message="You will receive a separate email with your login credentials and a link to set your password."
               buttonText="Back to Login"
               titleClassName="text-sm"
               messageClassName="text-xs"
             />
           </div>
         )
+      )}
+      {showTermsModal && (
+        <TermsAndConditions
+          setShowTermsModal={setShowTermsModal}
+          setTermsAccepted={setTermsAccepted}
+          setAcknowledged={setAcknowledged}
+        />
       )}
     </div>
   );
