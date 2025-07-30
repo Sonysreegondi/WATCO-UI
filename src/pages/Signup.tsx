@@ -50,12 +50,18 @@ export default function Signup() {
       {!showSuccess ? (
         <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh] flex flex-col mr-12">
           {/* Header */}
-          <div className="flex justify-between items-start mb-3">
+          <div className="flex justify-between items-start mb-2">
             <div>
-              <h2 className="text-base font-medium text-gray-800">
-                Complete Your Account
+              <h2
+                className="text-[20px] font-normal text-gray-900 text-left leading-tight"
+                style={{ fontFamily: "Roboto, sans-serif" }}
+              >
+                Create Your Account
               </h2>
-              <p className="text-xs text-gray-500 mt-1">
+              <p
+                className="text-[12px] text-gray-400 mb-2"
+                style={{ fontFamily: "Roboto, sans-serif" }}
+              >
                 Fill in your details to get started.
               </p>
             </div>
