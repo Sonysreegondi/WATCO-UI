@@ -11,12 +11,18 @@ export default function Login() {
   const [submitClicked, setSubmitClicked] = useState(false);
   const [formData, setFormData] = useState<{ [key: string]: string }>({});
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [contacts, setContacts] = useState([{ id: 1 }]);
+  const [activeContactId, setActiveContactId] = useState(1);
+  const [contactCounter, setContactCounter] = useState(2); // next available unique ID
+  const [errorTabs, setErrorTabs] = useState<number[]>([]);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const handleNext = () => {
     const newErrors: { [key: string]: string } = {};
 
     if (step === 2) {
-      ["Street Address", "City", "State", "Country", "Postcode"].forEach(
+      ["streetAddress", "city", "state", "country", "postcode"].forEach(
         (field) => {
           if (!formData[field]?.trim()) {
             newErrors[field] = `${field} is required.`;
@@ -26,13 +32,40 @@ export default function Login() {
     }
 
     if (step === 3) {
-      ["Name", "Phone Number", "Office Phone Number", "Email"].forEach(
-        (field) => {
-          if (!formData[field]?.trim()) {
-            newErrors[field] = `${field} is required.`;
+      const errorContactIds: number[] = [];
+
+      contacts.forEach((contact) => {
+        let hasError = false;
+
+        ["name", "phone", "email"].forEach((field) => {
+          const key = `accountContact_${contact.id}_${field}`;
+          const label =
+            field === "name"
+              ? "Name"
+              : field === "phone"
+              ? "Phone Number"
+              : "Email";
+
+          if (!formData[key]?.trim()) {
+            newErrors[key] = `${label} is required.`;
+            hasError = true;
           }
+        });
+
+        if (hasError) {
+          errorContactIds.push(contact.id);
         }
-      );
+      });
+
+      setErrorTabs(errorContactIds); // highlight tabs with errors
+    }
+
+    if (step === 4) {
+      ["refName1", "refPhone1", "refName2", "refPhone2"].forEach((field) => {
+        if (!formData[field]?.trim()) {
+          newErrors[field] = `${field} is required.`;
+        }
+      });
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -57,21 +90,22 @@ export default function Login() {
   };
 
   return (
-   <div
-  className="min-h-screen w-full bg-cover bg-no-repeat bg-right flex items-center justify-end px-4 sm:px-8 py-8"
-  style={{ backgroundImage: "url('/assets/images/train.jpg')" }}
->
-
+    <div
+      className="min-h-screen w-full bg-cover bg-no-repeat bg-right flex items-center justify-end px-4 sm:px-8 py-8"
+      style={{ backgroundImage: "url('/assets/images/train.jpg')" }}
+    >
       {!showSuccess ? (
-     <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh] flex flex-col mr-12">
-
+        <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh] flex flex-col mr-12">
           {/* Header */}
           <div className="flex justify-between items-start mb-3">
             <div>
-              <h2 className="text-base font-medium text-gray-800">
+              <h2
+                className="text-[16px] font-normal text-gray-900 text-left leading-tight"
+                style={{ fontFamily: "Roboto, sans-serif" }}
+              >
                 Complete Your Account
               </h2>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-[11px] text-gray-500 mt-1 mb-2">
                 Fill in your details to get started.
               </p>
               <Stepper currentStep={step} totalSteps={4} />
@@ -88,16 +122,37 @@ export default function Login() {
             {/* Step 1 */}
             {step === 1 && (
               <div className="space-y-2">
-       
                 {[
-                  { label: "First Name", placeholder: "Enter First Name" },
-                  { label: "Last Name", placeholder: "Enter Last Name" },
-                  { label: "Company Name", placeholder: "Enter Company Name" },
                   {
+                    name: "firstName",
+                    label: "First Name",
+                    placeholder: "Enter First Name",
+                  },
+                  {
+                    name: "lastName",
+                    label: "Last Name",
+                    placeholder: "Enter Last Name",
+                  },
+                  {
+                    name: "companyName",
+                    label: "Company Name",
+                    placeholder: "Enter Company Name",
+                  },
+                  {
+                    name: "ABN",
+                    label: "Australian Business Number (ABN)",
+                    placeholder: "Enter Australian Business Number (ABN)",
+                  },
+                  {
+                    name: "mobileNumber",
                     label: "Mobile Number",
                     placeholder: "Enter Mobile Number",
                   },
-                  { label: "Email ID", placeholder: "Enter Email ID" },
+                  {
+                    name: "email",
+                    label: "Email",
+                    placeholder: "Enter Email",
+                  },
                 ].map((field, i) => (
                   <InputField
                     key={i}
@@ -125,36 +180,48 @@ export default function Login() {
                 </h3>
                 {[
                   {
+                    name: "streetAddress",
                     label: "Street Address",
                     placeholder: "Enter Street Address",
                   },
-                  { label: "City", placeholder: "Enter City Name" },
-                  { label: "State", placeholder: "Enter State Name" },
-                  { label: "Country", placeholder: "Enter Country Name" },
-                  { label: "Postcode", placeholder: "Enter Postcode" },
+                  {
+                    name: "city",
+                    label: "City",
+                    placeholder: "Enter City Name",
+                  },
+                  {
+                    name: "state",
+                    label: "State",
+                    placeholder: "Enter State Name",
+                  },
+                  {
+                    name: "country",
+                    label: "Country",
+                    placeholder: "Enter Country Name",
+                  },
+                  {
+                    name: "postcode",
+                    label: "Postcode",
+                    placeholder: "Enter Postcode",
+                  },
                 ].map((field, i) => (
                   <InputField
                     key={i}
                     label={field.label}
                     placeholder={field.placeholder}
-                    value={formData[field.label] || ""}
+                    value={formData[field.name] || ""}
                     onChange={(e) => {
                       const value = e.target.value;
-                      setFormData((prev) => ({
-                        ...prev,
-                        [field.label]: value,
-                      }));
-
-                      // Clear error as user types
-                      if (errors[field.label]) {
+                      setFormData((prev) => ({ ...prev, [field.name]: value }));
+                      if (errors[field.name]) {
                         setErrors((prev) => {
                           const updated = { ...prev };
-                          delete updated[field.label];
+                          delete updated[field.name];
                           return updated;
                         });
                       }
                     }}
-                    error={errors[field.label]}
+                    error={errors[field.name]}
                   />
                 ))}
               </div>
@@ -163,59 +230,106 @@ export default function Login() {
             {/* Step 3 */}
             {step === 3 && (
               <div className="space-y-4 mt-2 p-2">
-                <div className="flex justify-between items-center mb-2">
+                {/* Header and Add Button */}
+                <div className="flex justify-between items-center">
                   <h3 className="text-sm font-semibold text-gray-800">
-                    Accounts Contact
+                    Accounts Payable Contact
                   </h3>
                   <button
                     type="button"
-                    className="text-sm text-blue-600 font-medium hover:underline"
+                    className="text-blue-600 text-xs font-medium"
+                    onClick={() => {
+                      setContacts((prev) => [...prev, { id: contactCounter }]);
+                      setActiveContactId(contactCounter);
+                      setContactCounter((prev) => prev + 1);
+                    }}
                   >
                     Add+
                   </button>
                 </div>
-                {[
-                  {
-                    label: "Name",
-                    placeholder: "Enter Name",
-                  },
-                  {
-                    label: "Phone Number",
-                    placeholder: "Enter Phone Number",
-                  },
-                  {
-                    label: "Office Phone Number",
-                    placeholder: "Enter Office Phone Number",
-                  },
-                  {
-                    label: "Email",
-                    placeholder: "Enter Email",
-                  },
-                ].map((field, i) => (
-                  <InputField
-                    key={i}
-                    label={field.label}
-                    placeholder={field.placeholder}
-                    value={formData[field.label] || ""}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setFormData((prev) => ({
-                        ...prev,
-                        [field.label]: value,
-                      }));
 
-                      // Clear error as user types
-                      if (errors[field.label]) {
-                        setErrors((prev) => {
-                          const updated = { ...prev };
-                          delete updated[field.label];
-                          return updated;
-                        });
-                      }
-                    }}
-                    error={errors[field.label]}
-                  />
-                ))}
+                {/* Tab Navigation */}
+                <div className="flex flex-wrap gap-2 mt-2 text-xs font-medium">
+                  {contacts.map((contact, index) => {
+                    const isActive = activeContactId === contact.id;
+                    const hasErrors = errorTabs.includes(contact.id);
+                    return (
+                      <div
+                        key={contact.id}
+                        onClick={() => setActiveContactId(contact.id)}
+                        className={`flex items-center px-4 py-1.5 rounded-full cursor-pointer border transition-all duration-200
+  ${
+    isActive
+      ? "bg-yellow-500 text-white border-yellow-500 shadow-sm"
+      : hasErrors
+      ? "bg-red-100 text-red-600 border-red-400 hover:bg-red-200"
+      : "bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200"
+  }`}
+                      >
+                        Contact {String(index + 1).padStart(2, "0")}
+                        {contacts.length > 1 && (
+                          <span
+                            className="text-white ml-2 hover:text-red-300"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const updated = contacts.filter(
+                                (c) => c.id !== contact.id
+                              );
+                              setContacts(updated);
+                              if (isActive && updated.length > 0) {
+                                setActiveContactId(updated[0].id);
+                              }
+                            }}
+                          >
+                            ✕
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Contact Form for Active Tab */}
+                <div className="mt-2 space-y-2">
+                  {[
+                    { key: "name", label: "Name", placeholder: "Enter Name" },
+                    {
+                      key: "phone",
+                      label: "Phone Number",
+                      placeholder: "Enter Phone Number",
+                    },
+                    {
+                      key: "email",
+                      label: "Email",
+                      placeholder: "Enter Email",
+                    },
+                  ].map((field) => {
+                    const fieldKey = `accountContact_${activeContactId}_${field.key}`;
+                    return (
+                      <InputField
+                        key={fieldKey}
+                        label={field.label}
+                        placeholder={field.placeholder}
+                        value={formData[fieldKey] || ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setFormData((prev) => ({
+                            ...prev,
+                            [fieldKey]: value,
+                          }));
+                          if (errors[fieldKey]) {
+                            setErrors((prev) => {
+                              const updated = { ...prev };
+                              delete updated[fieldKey];
+                              return updated;
+                            });
+                          }
+                        }}
+                        error={errors[fieldKey]}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             )}
 
@@ -227,18 +341,22 @@ export default function Login() {
                 </h3>
                 {[
                   {
+                    name: "refName1",
                     label: "Name",
                     placeholder: "Enter Name",
                   },
                   {
+                    name: "refPhone1",
                     label: "Phone Number",
                     placeholder: "Enter Phone Number",
                   },
                   {
+                    name: "refName2",
                     label: "Name 2",
                     placeholder: "Enter Second Name",
                   },
                   {
+                    name: "refPhone2",
                     label: "Phone Number 2",
                     placeholder: "Enter Second Phone Number",
                   },
@@ -265,13 +383,18 @@ export default function Login() {
                   <input
                     type="checkbox"
                     checked={acknowledged}
+                    disabled={!termsAccepted}
                     onChange={(e) => setAcknowledged(e.target.checked)}
                     className="mt-1"
                   />
                   <span className="text-xs text-gray-700">
-                    <Link to="#" className="text-blue-600 underline">
+                    <button
+                      type="button"
+                      onClick={() => setShowTermsModal(true)}
+                      className="text-blue-600 underline"
+                    >
                       Acknowledgment of Terms and Conditions
-                    </Link>
+                    </button>
                   </span>
                 </div>
               </div>
@@ -316,7 +439,7 @@ export default function Login() {
               title="Account Created Successfully"
               message="Your account setup is complete. You can now log in and start booking!"
               buttonText="Back to Login"
-               titleClassName="text-sm"
+              titleClassName="text-sm"
               messageClassName="text-xs"
             />
           </div>

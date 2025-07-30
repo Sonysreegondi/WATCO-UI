@@ -28,7 +28,7 @@ export default function InputField({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`w-full border rounded px-2 py-[6px] text-xs font-roboto placeholder-gray-300 ${
+        className={`w-full border rounded px-2 py-[6px] text-[11px] font-roboto placeholder-gray-300 ${
           error ? "border-red-500" : "border-gray-300"
         }`}
       />

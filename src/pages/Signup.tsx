@@ -91,7 +91,7 @@ export default function Signup() {
                 placeholder: "Enter Company Name",
               },
               {
-                name: "abn",
+                name: "ABN",
                 label: "Australian Business Number (ABN)",
                 placeholder: "Enter Australian Business Number (ABN)",
               },
@@ -170,11 +170,12 @@ export default function Signup() {
         showSuccess && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-white px-4">
             <SuccessScreen
-              title="Your application has been submitted successfully!"
-              message="Your account setup is complete. You can now log in and start booking!"
+              title="Application Submitted Successfully!"
+              message="Your request has been received and is currently under review by our administrative team, once approved, you will receive a separate email to complete your profile."
               buttonText="Back to Login"
               titleClassName="text-sm"
               messageClassName="text-xs"
+              imageType="variant1" // <-- Add this line
             />
           </div>
         )

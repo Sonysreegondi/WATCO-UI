@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 interface SuccessScreenProps {
@@ -7,6 +6,7 @@ interface SuccessScreenProps {
   buttonText?: string;
   titleClassName?: string;
   messageClassName?: string;
+  imageType?: "default" | "variant1"; // <-- Add this line
 }
 
 export default function SuccessScreen({
@@ -15,12 +15,18 @@ export default function SuccessScreen({
   buttonText = "Back to Login",
   titleClassName = "",
   messageClassName = "",
+  imageType = "default", // <-- Default to normal image
 }: SuccessScreenProps) {
   const navigate = useNavigate();
 
   const handleClick = () => {
     navigate("/login");
   };
+
+  const imageSrc =
+    imageType === "variant1"
+      ? "/assets/images/success1.png"
+      : "/assets/images/success.png";
 
   return (
     <div className="min-h-screen w-full bg-white flex flex-col items-center justify-center px-4 relative">
@@ -33,20 +39,24 @@ export default function SuccessScreen({
 
       {/* Center Content */}
       <div className="flex flex-col items-center text-center max-w-[90%] sm:max-w-[600px]">
-        {/* Illustration */}
+        {/* Success Illustration */}
         <img
-          src="/assets/images/success.png"
+          src={imageSrc}
           alt="Success Illustration"
           className="w-[250px] sm:w-[300px] md:w-[350px] mb-6"
         />
 
         {/* Title */}
-        <h2 className={`text-sm sm:text-base md:text-lg font-semibold text-gray-800 mb-2 ${titleClassName}`}>
+        <h2
+          className={`text-sm sm:text-base md:text-lg font-semibold text-gray-800 mb-2 ${titleClassName}`}
+        >
           {title}
         </h2>
 
         {/* Message */}
-        <p className={`text-xs sm:text-sm text-gray-600 mb-6 px-4 ${messageClassName}`}>
+        <p
+          className={`text-xs sm:text-sm text-gray-600 mb-6 px-4 ${messageClassName}`}
+        >
           {message}
         </p>
 
