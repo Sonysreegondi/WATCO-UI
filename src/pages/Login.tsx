@@ -17,11 +17,12 @@ export default function Login() {
           />
 
           <h2
-            className="text-[22px] font-semibold text-gray-900 leading-tight"
-            style={{ fontFamily: "Lexend Deca" }}
+            className="text-[22px] font-normal text-gray-900 leading-tight text-center"
+            style={{ fontFamily: "Roboto, sans-serif" }}
           >
             Welcome!
           </h2>
+
           <p
             className="text-sm text-gray-600 mt-1"
             style={{ fontFamily: "Lexend Deca" }}

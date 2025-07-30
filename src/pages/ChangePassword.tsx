@@ -19,12 +19,11 @@ export default function ChangePassword() {
             alt="Cattle Train Logo"
             className="mx-auto w-24 sm:w-28 mb-3"
           />
-
           <h2
-            className="text-[22px] font-semibold text-gray-900 leading-tight"
-            style={{ fontFamily: "Lexend Deca" }}
+            className="text-[22px] font-normal text-gray-900 text-center leading-tight"
+            style={{ fontFamily: "Roboto, sans-serif" }}
           >
-            Change your Password
+            Set Password
           </h2>
           <p
             className="text-sm text-gray-600 mt-1"
