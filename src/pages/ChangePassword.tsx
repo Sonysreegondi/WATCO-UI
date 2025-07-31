@@ -12,7 +12,7 @@ export default function ChangePassword() {
       className="min-h-screen w-full bg-cover bg-no-repeat bg-right flex items-center justify-end px-4 sm:px-8 py-8"
       style={{ backgroundImage: "url('/assets/images/train.jpg')" }}
     >
-      <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg flex flex-col mr-12">
+      <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg flex flex-col">
         <div className="text-center mb-4">
           <img
             src="/assets/images/cattletrain.png"

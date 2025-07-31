@@ -26,7 +26,7 @@ export default function SuccessScreen({
   const imageSrc =
     imageType === "variant1"
       ? "/assets/images/success1.png"
-      : "/assets/images/success.png";
+      : "/assets/images/success1.png";
 
   return (
     <div className="min-h-screen w-full bg-white flex flex-col items-center justify-center px-4 relative">
@@ -38,7 +38,7 @@ export default function SuccessScreen({
       />
 
       {/* Center Content */}
-      <div className="flex flex-col items-center text-center max-w-[90%] sm:max-w-[600px]">
+      <div className="flex flex-col items-center text-center max-w-[90%] sm:max-w-[1000px]">
         {/* Success Illustration */}
         <img
           src={imageSrc}
@@ -48,14 +48,14 @@ export default function SuccessScreen({
 
         {/* Title */}
         <h2
-          className={`text-sm sm:text-base md:text-lg font-semibold text-gray-800 mb-2 ${titleClassName}`}
+          className={`text-[35px]  text-gray-900 mb-2 leading-tight ${titleClassName}`}
         >
           {title}
         </h2>
 
         {/* Message */}
         <p
-          className={`text-xs sm:text-sm text-gray-600 mb-6 px-4 ${messageClassName}`}
+          className={`text-[12px] mt-4 text-gray-600 mb-6 px-4 ${messageClassName}`}
         >
           {message}
         </p>

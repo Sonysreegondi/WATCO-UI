@@ -7,7 +7,7 @@ export default function Login() {
       style={{ backgroundImage: "url('/assets/images/train.jpg')" }}
     >
       {/* Floating Login Card */}
-      <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg flex flex-col mr-12">
+      <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg flex flex-col">
         <div className="text-center mb-4">
           <img
             src="/assets/images/cattletrain.png"

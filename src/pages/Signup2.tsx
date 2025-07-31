@@ -95,7 +95,7 @@ export default function Login() {
       style={{ backgroundImage: "url('/assets/images/train.jpg')" }}
     >
       {!showSuccess ? (
-        <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh] flex flex-col mr-12">
+        <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh] flex flex-col">
           {/* Header */}
           <div className="flex justify-between items-start mb-3">
             <div>

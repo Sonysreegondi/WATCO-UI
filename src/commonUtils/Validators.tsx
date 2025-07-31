@@ -15,6 +15,6 @@ export const isValidEmail = (email: string): string | boolean => {
 
 export const isValidTenDigitMobile = (number: string): boolean => {
   const cleaned = number.replace(/\s+/g, ''); // remove any whitespace
-  const pattern = /^0\d{9}$/; // must start with '0' and be 10 digits
+  const pattern = /^\d{10}$/; // must start with '0' and be 10 digits
   return pattern.test(cleaned);
 };
