@@ -1,5 +1,5 @@
 // src/utils/validators.ts
-
+import blacklist from "../commonUtils/blacklistedEmails.json";
 export const isValidEmail = (email: string): string | boolean => {
   email = email.toLowerCase();
 
@@ -18,3 +18,8 @@ export const isValidTenDigitMobile = (number: string): boolean => {
   const pattern = /^\d{10}$/; // must start with '0' and be 10 digits
   return pattern.test(cleaned);
 };
+
+export function isBlacklistedEmail(email: string): boolean {
+  const prefix = email.split("@")[0].toLowerCase();
+return blacklist.prefixes.includes(prefix);
+}
