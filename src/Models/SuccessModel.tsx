@@ -48,7 +48,7 @@ export default function SuccessScreen({
 
         {/* Title */}
         <h2
-          className={`text-[35px]  text-gray-900 mb-2 leading-tight ${titleClassName}`}
+          className={`text-[36px]  text-gray-900 mb-2 leading-tight ${titleClassName}`}
         >
           {title}
         </h2>

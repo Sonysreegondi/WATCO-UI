@@ -34,7 +34,7 @@ export default function ChangePassword() {
               className="text-sm text-gray-600 mt-1"
               style={{ fontFamily: "Lexend Deca" }}
             >
-              Set your new password to access bookings
+              Set new password to access Your account
             </p>
           </div>
 

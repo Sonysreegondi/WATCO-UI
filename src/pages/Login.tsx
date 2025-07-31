@@ -7,6 +7,7 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
+  
 
   return (
     <div
@@ -55,7 +56,7 @@ export default function Login() {
             }
 
             setEmailError("");
-            navigate("/watco/admindashboard");
+            navigate("/signup2");
           }}
         >
           {/* Email Input */}
@@ -72,17 +73,11 @@ export default function Login() {
               <input
                 type="email"
                 value={email}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setEmail(val);
-
-                  const trimmed = val.trim();
+                onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => {
+                  const trimmed = email.trim();
                   if (!trimmed) {
                     setEmailError("Email is required.");
-                  } else if (isBlacklistedEmail(trimmed)) {
-                    setEmailError(
-                      "This is a restricted email address. Please use your personal or work email instead."
-                    );
                   } else {
                     setEmailError("");
                   }

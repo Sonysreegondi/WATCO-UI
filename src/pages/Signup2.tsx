@@ -4,10 +4,7 @@ import Stepper from "../components/common/Stepper";
 import InputField from "../components/common/InputField";
 import SuccessScreen from "../Models/SuccessModel";
 import TermsAndConditions from "../Models/Terms&Conditions"; // Add this import
-import {
-  isBlacklistedEmail,
-  isValidTenDigitMobile,
-} from "../commonUtils/Validators";
+import { isBlacklistedEmail } from "../commonUtils/Validators";
 
 export default function Login() {
   const [step, setStep] = useState(1);
@@ -101,7 +98,7 @@ export default function Login() {
       style={{ backgroundImage: "url('/assets/images/train.jpg')" }}
     >
       {!showSuccess ? (
-        <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh] flex flex-col">
+        <div className="bg-white w-full max-w-md lg:max-w-lg p-6 shadow-2xl rounded-lg overflow-y-auto max-h-[90vh] flex flex-col mr-12">
           {/* Header */}
           <div className="flex justify-between items-start mb-3">
             <div>
@@ -151,24 +148,16 @@ export default function Login() {
                     label: "Mobile Number",
                     placeholder: "Enter Mobile Number",
                   },
-                  {
-                    name: "email",
-                    label: "Email",
-                    placeholder: "Enter Email",
-                  },
+                  { name: "email", label: "Email", placeholder: "Enter Email" },
                 ].map((field, i) => (
                   <InputField
                     key={i}
                     label={field.label}
                     placeholder={field.placeholder}
-                    value={formData[field.label] || ""}
-                    onChange={(value) => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        [field.label]: value,
-                      }));
-                    }}
-                    error={""}
+                    value={formData[field.name] || ""}
+                    // disabled={true} // ✅ Make Step 1 fields read-only
+                    onChange={() => {}} // Disabled, no updates
+                    error=""
                   />
                 ))}
               </div>
@@ -212,7 +201,9 @@ export default function Login() {
                     label={field.label}
                     placeholder={field.placeholder}
                     value={formData[field.name] || ""}
-                    onChange={(value) => {
+                    onChange={(e) => {
+                      const value = e.target.value.trim();
+
                       setFormData((prev) => ({ ...prev, [field.name]: value }));
 
                       if (errors[field.name]) {
@@ -274,7 +265,9 @@ export default function Login() {
                 <div className="flex flex-wrap gap-2 mt-2 text-xs font-medium">
                   {contacts.map((contact, index) => {
                     const isActive = activeContactId === contact.id;
-                    const hasErrors = errorTabs.includes(contact.id);
+                    const hasErrors = Object.keys(errors).some((key) =>
+                      key.startsWith(`accountContact_${contact.id}_`)
+                    );
                     return (
                       <div
                         key={contact.id}
@@ -339,28 +332,28 @@ export default function Login() {
                         placeholder={field.placeholder}
                         name={
                           field.key === "phone" ? "mobileNumber" : field.key
-                        } // enable sanitization
-                        inputMode={field.key === "phone" ? "numeric" : "text"}
+                        }
                         value={formData[fieldKey] || ""}
-                        onChange={(value) => {
-                          const trimmed = value.trim();
+                        onChange={(e) => {
+                          const trimmed = e.target.value.trim();
+
+                          // Apply maxLength manually only for phone
+                          const finalValue =
+                            field.key === "phone"
+                              ? trimmed.slice(0, 10)
+                              : trimmed;
 
                           setFormData((prev) => ({
                             ...prev,
-                            [fieldKey]: trimmed,
+                            [fieldKey]: finalValue,
                           }));
 
+                          // Validation based on field type
                           if (field.key === "phone") {
                             if (!trimmed) {
                               setErrors((prev) => ({
                                 ...prev,
                                 [fieldKey]: "Phone Number is required.",
-                              }));
-                            } else if (!isValidTenDigitMobile(trimmed)) {
-                              setErrors((prev) => ({
-                                ...prev,
-                                [fieldKey]:
-                                  "Enter a valid 10-digit mobile number starting with 0.",
                               }));
                             } else {
                               setErrors((prev) => {
@@ -378,8 +371,7 @@ export default function Login() {
                             } else if (isBlacklistedEmail(trimmed)) {
                               setErrors((prev) => ({
                                 ...prev,
-                                [fieldKey]:
-                                  "This is a restricted email address. Please use your personal or work email instead.",
+                                [fieldKey]: "Not a Valid email!",
                               }));
                             } else {
                               setErrors((prev) => {
@@ -443,15 +435,24 @@ export default function Login() {
                     key={i}
                     label={field.label}
                     placeholder={field.placeholder}
-                    value={formData[field.label] || ""}
+                    value={formData[field.name] || ""}
                     required={false}
-                    onChange={(value) => {
+                    onChange={(e) => {
+                      const trimmed = e.target.value.trim();
                       setFormData((prev) => ({
                         ...prev,
-                        [field.label]: value,
+                        [field.name]: trimmed,
                       }));
+
+                      if (errors[field.name]) {
+                        setErrors((prev) => {
+                          const updated = { ...prev };
+                          delete updated[field.name];
+                          return updated;
+                        });
+                      }
                     }}
-                    error={errors[field.label]}
+                    error={errors[field.name]}
                   />
                 ))}
 
@@ -477,7 +478,11 @@ export default function Login() {
               </div>
             )}
           </div>
-
+{step === 4 && (
+  <p className="text-[12px] text-yellow-600 font-medium mb-1 ml-2">
+   Please review and acknowledge the Terms and Conditions before submitting.
+  </p>
+)}
           {/* Navigation Buttons */}
           <div className="flex flex-col gap-3 pt-3 md:flex-row md:gap-3 mt-2 mb-0 relative">
             {/* Buttons */}
@@ -514,10 +519,12 @@ export default function Login() {
             )}
 
             {/* Must be filled note */}
-            <span className="absolute right-0 -bottom-5 text-[14px]">
-              <span className="text-red-500 font-bold text-[16px]">*</span>{" "}
-              <span className="text-black font-normal">Must be filled</span>
-            </span>
+            {step !== 1 && (
+              <span className="absolute right-0 -bottom-5 text-[14px]">
+                <span className="text-red-500 font-bold text-[16px]">*</span>{" "}
+                <span className="text-black font-normal">Must be filled</span>
+              </span>
+            )}
           </div>
         </div>
       ) : (
